@@ -1,18 +1,26 @@
 // ==UserScript==
 // @name         分P视频随机播放
 // @namespace    https://qinlili.bid
-// @version      0.1
+// @version      0.1.1
 // @description  小可...嘿嘿🤤🤤...阿梓...嘿嘿🤤🤤...笙歌...嘿嘿🤤🤤...
 // @author       琴梨梨
 // @match        https://www.bilibili.com/video/*
 // @icon         https://www.bilibili.com/favicon.ico
-// @grant        none
+// @homepage     https://github.com/qinlili23333/BiliRandomPlay
+// @supportURL   https://github.com/qinlili23333/BiliRandomPlay
 // @license      GPLv3
 // @run-at       document-idle
+// @grant        GM_registerMenuCommand
 // ==/UserScript==
 
 (function() {
     'use strict';
+    GM_registerMenuCommand("已经随机"+ localStorage.randomSwitch+"次", () => {
+        if(confirm("真的要清除统计么？")){
+            localStorage.randomSwitch=0;
+            alert("清除成功！刷新页面后生效！")
+        }
+    });
     const utils={
         parseInfo:text=>{
             return {
@@ -42,6 +50,11 @@
                 const nextParams=new URLSearchParams(nextUrl.search)
                 nextParams.set('p', next);
                 nextParams.set('random', 'on');
+                if(localStorage.randomSwitch){
+                    localStorage.randomSwitch++;
+                }else{
+                    localStorage.randomSwitch=1;
+                }
                 location.href=nextUrl.pathname+"?"+nextParams.toString();
             }
             originPush.call(history,a,b,c)
