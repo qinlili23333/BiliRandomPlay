@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         分P视频随机播放
+// @name         B站分P视频随机播放
 // @namespace    https://qinlili.bid
-// @version      0.1.1
+// @version      0.2.0
 // @description  小可...嘿嘿🤤🤤...阿梓...嘿嘿🤤🤤...笙歌...嘿嘿🤤🤤...
 // @author       琴梨梨
 // @match        https://www.bilibili.com/video/*
@@ -21,23 +21,24 @@
             alert("清除成功！刷新页面后生效！")
         }
     });
-    const utils={
-        parseInfo:text=>{
-            return {
-                now:text.substr(1,text.indexOf("/")-1),
-                total:text.substr(text.indexOf("/")+1,text.length-text.indexOf("/")-2)
-            }
-        },
-        random:(min, max)=> {
-            return Math.round(Math.random() * (max - min)) + min;
-        }
-    }
     if(document.getElementById("multi_page")){
+        const utils={
+            parseInfo:text=>{
+                return {
+                    now:text.substr(1,text.indexOf("/")-1),
+                    total:text.substr(text.indexOf("/")+1,text.length-text.indexOf("/")-2)
+                }
+            },
+            random:(min, max)=> {
+                return Math.round(Math.random() * (max - min)) + min;
+            }
+        }
         //检测到分P视频
         console.log("Multi Video Detected! Initializing Kero Engine... -Qinlili");
         let current=utils.parseInfo(document.getElementsByClassName("cur-page")[0].innerText);
         console.log(current)
-        let next=0
+        let next=0;
+        let noClick=true;
         //接管pushState来替换分P
         history.pushState.bind(history)
         const originPush=history.pushState
@@ -46,8 +47,8 @@
                 c=location.origin+c
             }
             const nextUrl=new URL(c)
-            if((nextUrl.pathname==location.pathname)&&switchOn){
-                const nextParams=new URLSearchParams(nextUrl.search)
+            if((nextUrl.pathname==location.pathname)&&switchOn&&noClick){
+                const nextParams=new URLSearchParams(nextUrl.search);
                 nextParams.set('p', next);
                 nextParams.set('random', 'on');
                 if(localStorage.randomSwitch){
@@ -56,8 +57,10 @@
                     localStorage.randomSwitch=1;
                 }
                 location.href=nextUrl.pathname+"?"+nextParams.toString();
+            }else{
+                originPush.call(history,a,b,c)
+                searchParams = new URLSearchParams(document.location.search);
             }
-            originPush.call(history,a,b,c)
         }
         //初始化随机播放切换
         let switchOn=false;
@@ -72,6 +75,12 @@
                 if(url.indexOf("player/pagelist")>0){
                     this.addEventListener('load', event=>{
                         refreshText();
+                        document.querySelector("#multi_page > div.cur-list").addEventListener("click",()=>{
+                            //主动点击时避免切歌
+                            console.log("Prevent unwanted random. -Qinlili")
+                            noClick=false;
+                            setTimeout(()=>{noClick=true;},500)
+                        },true);
                     });
                 }
                 open.call(this, method, url, async, user, pass);
@@ -97,5 +106,6 @@
             switchOn=switchOn?false:true;
             refreshText();
         },true)
+
     }
 })();
