@@ -52,40 +52,37 @@
         if (searchParams.get("random") == "on") {
             switchOn = true
         }
-        const randomSwitch = document.querySelector("#multi_page > div.head-con > div.head-left > h3");
-
         setTimeout(() => {
-            document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML = '<span class="random-button"><span class="txt">随机播放</span> <span id="random-switch" class="switch-button"></span></span>' + document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML;
-            document.querySelector('#random-switch').addEventListener("click", function() {
+            if (switchOn) {
+                document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML = '<span class="next-button"><span class="txt">随机播放</span> <span id="random-switch" class="switch-button on"></span></span>' + document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML;
+            }
+            else {
+                document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML = '<span class="next-button"><span class="txt">随机播放</span> <span id="random-switch" class="switch-button"></span></span>' + document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML;
+            }
+            document.querySelector('#random-switch').addEventListener("click", function () {
                 switchOn = !switchOn
-                if (switchOn) 
+                if (switchOn) {
                     this.className = "switch-button on"
-                else
+                }
+                else {
                     this.className = "switch-button"
+                }
             })
-            refreshText();
+            random();
             document.querySelector("#multi_page > div.cur-list").addEventListener("click", () => {
                 noClick = false;
                 setTimeout(() => { noClick = true; }, 500)
             }, true);
         }, 5000);
-        const refreshText = () => {
+        const random = () => {
             if (switchOn) {
                 next = utils.random(1, current.total)
-                randomSwitch.textContent = "随机播放"
                 searchParams.set('random', 'on');
                 originPush.call(history, {}, '', location.pathname + "?" + searchParams.toString())
             } else {
-                randomSwitch.textContent = "连续播放"
                 searchParams.set('random', 'off');
                 originPush.call(history, {}, '', location.pathname + "?" + searchParams.toString())
             }
         }
-        randomSwitch.addEventListener("click", event => {
-            event.stopPropagation();
-            event.preventDefault();
-            switchOn = !switchOn
-            refreshText();
-        }, true)
     }
 })();
