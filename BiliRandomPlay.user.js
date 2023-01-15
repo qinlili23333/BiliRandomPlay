@@ -55,7 +55,14 @@
         const randomSwitch = document.querySelector("#multi_page > div.head-con > div.head-left > h3");
 
         setTimeout(() => {
-            document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML = '<span class="random-button"><span class="txt">随机播放</span> <span class="switch-button"></span></span>' + document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML;
+            document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML = '<span class="random-button"><span class="txt">随机播放</span> <span id="random-switch" class="switch-button"></span></span>' + document.querySelector("#multi_page > div.head-con > div.head-right").innerHTML;
+            document.querySelector('#random-switch').addEventListener("click", function() {
+                switchOn = !switchOn
+                if (switchOn) 
+                    this.className = "switch-button on"
+                else
+                    this.className = "switch-button"
+            })
             refreshText();
             document.querySelector("#multi_page > div.cur-list").addEventListener("click", () => {
                 noClick = false;
